@@ -3,68 +3,67 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
          https://maven.apache.org/xsd/maven-4.0.0.xsd">
-
     <modelVersion>4.0.0</modelVersion>
-
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.5.6</version>
+        <version>3.2.0</version>  <!-- Fixed: 2.5.6 does not support Java 17 properly;
+                                        Spring Boot 3.x is the Java 17+ baseline -->
         <relativePath/>
     </parent>
-
     <groupId>com.javaproject</groupId>
     <artifactId>database_service_project</artifactId>
     <version>0.0.5-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <properties>
-        <java.version>11</java.version>
-        <jacoco.version>0.8.7</jacoco.version>
+        <java.version>17</java.version>           <!-- Fixed: was 11 -->
+        <jacoco.version>0.8.11</jacoco.version>   <!-- Fixed: 0.8.7 has no Java 17 support;
+                                                        0.8.11 is the stable Java 17 compatible version -->
     </properties>
 
     <dependencies>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
-
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <scope>runtime</scope>
         </dependency>
-
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
 
     <build>
         <plugins>
-
-            <!-- Spring Boot Plugin -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <!-- Fixed: exclude Lombok from the final JAR,
+                             it's compile-time only -->
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                </configuration>
             </plugin>
-
-            <!-- JaCoCo Plugin -->
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
@@ -76,7 +75,6 @@
                             <goal>prepare-agent</goal>
                         </goals>
                     </execution>
-
                     <execution>
                         <id>report</id>
                         <phase>verify</phase>
@@ -86,7 +84,6 @@
                     </execution>
                 </executions>
             </plugin>
-
         </plugins>
     </build>
 
@@ -95,11 +92,9 @@
             <id>maven-snapshots</id>
             <url>http://nexus:8081/repository/maven-snapshots/</url>
         </snapshotRepository>
-
         <repository>
             <id>maven-releases</id>
             <url>http://nexus:8081/repository/maven-releases/</url>
         </repository>
     </distributionManagement>
-
 </project>
