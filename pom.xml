@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
+<project xmlns="http://maven.apache.org/POM/xml.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
          https://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -7,19 +7,23 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.0</version>  <!-- Fixed: 2.5.6 does not support Java 17 properly;
-                                        Spring Boot 3.x is the Java 17+ baseline -->
+        <version>2.7.18</version>   <!-- Fixed: 2.7.18 is the last 2.x release;
+                                          supports Java 17 AND keeps javax.servlet
+                                          + WebSecurityConfigurerAdapter intact,
+                                          so no source code changes needed.
+                                          3.x was too big a jump without rewriting
+                                          the security layer -->
         <relativePath/>
     </parent>
+
     <groupId>com.javaproject</groupId>
     <artifactId>database_service_project</artifactId>
     <version>0.0.5-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <properties>
-        <java.version>17</java.version>           <!-- Fixed: was 11 -->
-        <jacoco.version>0.8.11</jacoco.version>   <!-- Fixed: 0.8.7 has no Java 17 support;
-                                                        0.8.11 is the stable Java 17 compatible version -->
+        <java.version>17</java.version>
+        <jacoco.version>0.8.11</jacoco.version>
     </properties>
 
     <dependencies>
@@ -31,6 +35,14 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
+
+        <!-- Fixed: this was missing entirely — it provides all the
+             org.springframework.security.* packages the source needs -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
@@ -46,6 +58,13 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <!-- Fixed: adds security test utilities like @WithMockUser -->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -55,8 +74,6 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <excludes>
-                        <!-- Fixed: exclude Lombok from the final JAR,
-                             it's compile-time only -->
                         <exclude>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
